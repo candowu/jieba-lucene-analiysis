@@ -48,6 +48,7 @@ public class JiebaTokenizer extends SegmentingTokenizerBase {
     private long fieldIdCounter = 0;
     private static long MAX_FIELD_ID=1000000;
     private long curFieldId = 0;
+    private int fieldOffset = 0;
 
 
     /** Creates a new JiebaTokenizer */
@@ -70,13 +71,12 @@ public class JiebaTokenizer extends SegmentingTokenizerBase {
             this.sentenceStart = sentenceStart;
             this.sentenceEnd = sentenceEnd;
         }else{//field not change
-            if (sentenceStart <= this.sentenceStart){//buffer is full, need correct offset
-                this.sentenceStart = this.sentenceEnd + sentenceStart;
-                this.sentenceEnd = this.sentenceStart + (sentenceEnd - sentenceStart);
-            }else{
-                this.sentenceStart = sentenceStart;
-                this.sentenceEnd = sentenceEnd;
+            if (sentenceStart == 0){
+                fieldOffset = this.sentenceEnd;
             }
+           
+             this.sentenceStart = sentenceStart + fieldOffset;
+             this.sentenceEnd = sentenceEnd + fieldOffset;
         }
 
         String sentence = new String(buffer, sentenceStart, sentenceEnd - sentenceStart);
@@ -126,5 +126,6 @@ public class JiebaTokenizer extends SegmentingTokenizerBase {
         tokens = null;
         sentenceStart = 0;
         sentenceEnd = 0;
+        fieldOffset = 0;
     }
 }
